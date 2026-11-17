@@ -65,6 +65,8 @@ export function buildContext(opts: ContextOptions): AppContext {
     fetchFn: opts.fetchFn,
   });
   const ai = new AiService(opts.repos, aiClient, seizures, medications, wearables, bus);
+  dailyLogs.onChange = (userId) => ai.invalidateRisk(userId);
+  medications.onChange = (userId) => ai.invalidateRisk(userId);
   const reports = new ReportsService(opts.repos, seizures, medications);
   const dashboard = new DashboardService(ai, medications, seizures, wearables, emergency);
   return {
