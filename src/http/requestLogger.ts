@@ -11,7 +11,7 @@ export const requestLogger =
     const start = process.hrtime.bigint();
     res.on('finish', () => {
       const ms = Number(process.hrtime.bigint() - start) / 1e6;
-      log.info({ reqId: id, method: req.method, path: req.path, status: res.statusCode, ms: Math.round(ms) }, 'request');
+      log.info({ reqId: id, method: req.method, path: req.originalUrl.split('?')[0], status: res.statusCode, ms: Math.round(ms) }, 'request');
     });
     next();
   };
