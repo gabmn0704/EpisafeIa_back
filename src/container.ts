@@ -8,6 +8,7 @@ import { DailyLogsService } from './modules/dailyLogs/DailyLogsService';
 import { SeizuresService } from './modules/seizures/SeizuresService';
 import { NotificationChannelFactory } from './patterns/NotificationChannelFactory';
 import { EmergencyService } from './modules/emergency/EmergencyService';
+import { WearablesService } from './modules/wearables/WearablesService';
 import { AuditService } from './services/AuditService';
 import { EventBus } from './services/EventBus';
 
@@ -23,6 +24,7 @@ export interface AppContext {
   dailyLogs: DailyLogsService;
   seizures: SeizuresService;
   emergency: EmergencyService;
+  wearables: WearablesService;
   /** Comprobación de salud de dependencias (p. ej. ping a la BD). */
   healthCheck: () => Promise<boolean>;
 }
@@ -44,6 +46,7 @@ export function buildContext(opts: ContextOptions): AppContext {
   const seizures = new SeizuresService(opts.repos);
   const channels = new NotificationChannelFactory(opts.log);
   const emergency = new EmergencyService(opts.repos, bus, channels, audit, seizures, opts.log);
+  const wearables = new WearablesService(opts.repos, bus, emergency);
   return {
     config: opts.config,
     log: opts.log,
@@ -56,6 +59,7 @@ export function buildContext(opts: ContextOptions): AppContext {
     dailyLogs,
     seizures,
     emergency,
+    wearables,
     healthCheck: opts.healthCheck ?? (async () => true),
   };
 }
