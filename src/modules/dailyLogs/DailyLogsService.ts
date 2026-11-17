@@ -21,6 +21,9 @@ export class DailyLogsService {
   /** Pila de deshacer por usuario (HashTable + Stack). */
   private undo = new HashTable<Stack<UndoEntry>>();
 
+  /** Se invoca tras cualquier cambio de datos (p. ej. para invalidar el riesgo calculado). */
+  onChange: (userId: string) => void = () => undefined;
+
   constructor(private readonly repos: Repos) {}
 
   private async index(userId: string): Promise<BinarySearchTree<string, DailyLog>> {
@@ -61,6 +64,7 @@ export class DailyLogsService {
     this.indexes.delete(userId);
     if (existing) {
       const log = (await this.repos.dailyLogs.update(existing.id, input)) as DailyLog;
+      this.onChange(userId);
       return { log, created: false };
     }
     const log = await this.repos.dailyLogs.insert({
@@ -74,6 +78,7 @@ export class DailyLogsService {
       alcoholUnits: input.alcoholUnits ?? null,
       notes: input.notes ?? null,
     });
+    this.onChange(userId);
     return { log, created: true };
   }
 
@@ -85,12 +90,14 @@ export class DailyLogsService {
     const current = await this.repos.dailyLogs.findOne({ where: { userId, logDate: entry.date } });
     if (!entry.previous) {
       if (current) await this.repos.dailyLogs.delete(current.id);
+      this.onChange(userId);
       return { date: entry.date, restored: null };
     }
     const { id: _id, userId: _u, logDate: _d, ...fields } = entry.previous;
     const restored = current
       ? await this.repos.dailyLogs.update(current.id, fields)
       : await this.repos.dailyLogs.insert({ ...entry.previous });
+    this.onChange(userId);
     return { date: entry.date, restored: restored ?? null };
   }
 
