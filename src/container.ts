@@ -3,6 +3,7 @@ import type { AppConfig } from './config/env';
 import type { Repos } from './repositories/Repos';
 import { AuthService } from './modules/auth/AuthService';
 import { ContactsService } from './modules/contacts/ContactsService';
+import { MedicationsService } from './modules/medications/MedicationsService';
 import { AuditService } from './services/AuditService';
 import { EventBus } from './services/EventBus';
 
@@ -14,6 +15,7 @@ export interface AppContext {
   audit: AuditService;
   auth: AuthService;
   contacts: ContactsService;
+  medications: MedicationsService;
   /** Comprobación de salud de dependencias (p. ej. ping a la BD). */
   healthCheck: () => Promise<boolean>;
 }
@@ -30,6 +32,7 @@ export function buildContext(opts: ContextOptions): AppContext {
   const bus = new EventBus();
   const audit = new AuditService(opts.repos, opts.log);
   const auth = new AuthService(opts.repos, opts.config, audit);
+  const medications = new MedicationsService(opts.repos);
   return {
     config: opts.config,
     log: opts.log,
@@ -38,6 +41,7 @@ export function buildContext(opts: ContextOptions): AppContext {
     audit,
     auth,
     contacts: new ContactsService(opts.repos),
+    medications,
     healthCheck: opts.healthCheck ?? (async () => true),
   };
 }
