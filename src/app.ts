@@ -14,6 +14,7 @@ import { seizuresRoutes } from './modules/seizures/routes';
 import { emergencyRoutes } from './modules/emergency/routes';
 import { wearablesRoutes } from './modules/wearables/routes';
 import { aiRoutes } from './modules/ai/routes';
+import { reportsRoutes } from './modules/reports/routes';
 import { healthRoutes } from './modules/health/routes';
 
 export function createApp(ctx: AppContext): Express {
@@ -44,6 +45,7 @@ export function createApp(ctx: AppContext): Express {
   v1.use('/emergency', guard, emergencyRoutes(ctx.emergency));
   v1.use('/wearables', guard, wearablesRoutes(ctx.wearables));
   v1.use('/ai', guard, aiRoutes(ctx.ai));
+  v1.use('/reports', guard, reportsRoutes(ctx.reports));
   app.use('/api/v1', v1);
 
   app.use(notFoundHandler);

@@ -11,6 +11,7 @@ import { EmergencyService } from './modules/emergency/EmergencyService';
 import { WearablesService } from './modules/wearables/WearablesService';
 import { AiClient } from './modules/ai/AiClient';
 import { AiService } from './modules/ai/AiService';
+import { ReportsService } from './modules/reports/ReportsService';
 import { AuditService } from './services/AuditService';
 import { EventBus } from './services/EventBus';
 
@@ -28,6 +29,7 @@ export interface AppContext {
   emergency: EmergencyService;
   wearables: WearablesService;
   ai: AiService;
+  reports: ReportsService;
   /** Comprobación de salud de dependencias (p. ej. ping a la BD). */
   healthCheck: () => Promise<boolean>;
 }
@@ -59,6 +61,7 @@ export function buildContext(opts: ContextOptions): AppContext {
     fetchFn: opts.fetchFn,
   });
   const ai = new AiService(opts.repos, aiClient, seizures, medications, wearables, bus);
+  const reports = new ReportsService(opts.repos, seizures, medications);
   return {
     config: opts.config,
     log: opts.log,
@@ -73,6 +76,7 @@ export function buildContext(opts: ContextOptions): AppContext {
     emergency,
     wearables,
     ai,
+    reports,
     healthCheck: opts.healthCheck ?? (async () => true),
   };
 }
