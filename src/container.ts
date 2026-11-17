@@ -9,6 +9,8 @@ import { SeizuresService } from './modules/seizures/SeizuresService';
 import { NotificationChannelFactory } from './patterns/NotificationChannelFactory';
 import { EmergencyService } from './modules/emergency/EmergencyService';
 import { WearablesService } from './modules/wearables/WearablesService';
+import { AiClient } from './modules/ai/AiClient';
+import { AiService } from './modules/ai/AiService';
 import { AuditService } from './services/AuditService';
 import { EventBus } from './services/EventBus';
 
@@ -25,6 +27,7 @@ export interface AppContext {
   seizures: SeizuresService;
   emergency: EmergencyService;
   wearables: WearablesService;
+  ai: AiService;
   /** Comprobación de salud de dependencias (p. ej. ping a la BD). */
   healthCheck: () => Promise<boolean>;
 }
@@ -34,6 +37,8 @@ export interface ContextOptions {
   log: Logger;
   repos: Repos;
   healthCheck?: () => Promise<boolean>;
+  /** Inyectable para pruebas del cliente de IA. */
+  fetchFn?: typeof fetch;
 }
 
 /** Composición de dependencias (inyección manual, sin framework). */
@@ -47,6 +52,13 @@ export function buildContext(opts: ContextOptions): AppContext {
   const channels = new NotificationChannelFactory(opts.log);
   const emergency = new EmergencyService(opts.repos, bus, channels, audit, seizures, opts.log);
   const wearables = new WearablesService(opts.repos, bus, emergency);
+  const aiClient = new AiClient({
+    baseUrl: opts.config.aiServiceUrl,
+    timeoutMs: opts.config.aiTimeoutMs,
+    log: opts.log,
+    fetchFn: opts.fetchFn,
+  });
+  const ai = new AiService(opts.repos, aiClient, seizures, medications, wearables, bus);
   return {
     config: opts.config,
     log: opts.log,
@@ -60,6 +72,7 @@ export function buildContext(opts: ContextOptions): AppContext {
     seizures,
     emergency,
     wearables,
+    ai,
     healthCheck: opts.healthCheck ?? (async () => true),
   };
 }
