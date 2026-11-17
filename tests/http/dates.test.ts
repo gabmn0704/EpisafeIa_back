@@ -25,3 +25,17 @@ describe('dates', () => {
     expect(dateInZone(d, 'Not/AZone')).toBe('2024-05-01');
   });
 });
+
+describe('zonedTimeToUtc', () => {
+  it('converts Bogota local time (UTC-5) to UTC', async () => {
+    const { zonedTimeToUtc } = await import('../../src/http/dates');
+    expect(zonedTimeToUtc('2024-05-01', '08:00', 'America/Bogota').toISOString()).toBe('2024-05-01T13:00:00.000Z');
+    expect(zonedTimeToUtc('2024-05-01', '22:30', 'America/Bogota').toISOString()).toBe('2024-05-02T03:30:00.000Z');
+  });
+
+  it('is identity for UTC and tolerates invalid zones', async () => {
+    const { zonedTimeToUtc } = await import('../../src/http/dates');
+    expect(zonedTimeToUtc('2024-05-01', '08:00', 'UTC').toISOString()).toBe('2024-05-01T08:00:00.000Z');
+    expect(zonedTimeToUtc('2024-05-01', '08:00', 'Bad/Zone').toISOString()).toBe('2024-05-01T08:00:00.000Z');
+  });
+});
