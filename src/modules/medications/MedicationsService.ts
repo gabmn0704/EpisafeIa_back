@@ -122,7 +122,16 @@ export class MedicationsService {
   }
 
   /** Registra (o actualiza) la toma de una dosis concreta. */
+  /** Se invoca tras registrar una dosis (invalida el riesgo calculado). */
+  onChange: (userId: string) => void = () => undefined;
+
   async logDose(userId: string, input: DoseLogInput): Promise<MedicationLog> {
+    const saved = await this.saveDose(userId, input);
+    this.onChange(userId);
+    return saved;
+  }
+
+  private async saveDose(userId: string, input: DoseLogInput): Promise<MedicationLog> {
     ownedOrNotFound(await this.repos.medications.get(input.medicationId), userId, 'Medicamento');
     const scheduledFor = new Date(input.scheduledFor).toISOString();
     const existing = await this.repos.medicationLogs.findOne({ where: { userId, medicationId: input.medicationId, scheduledFor } });
