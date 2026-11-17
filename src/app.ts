@@ -16,6 +16,7 @@ import { wearablesRoutes } from './modules/wearables/routes';
 import { aiRoutes } from './modules/ai/routes';
 import { reportsRoutes } from './modules/reports/routes';
 import { dashboardRoutes } from './modules/dashboard/routes';
+import { streamRoutes } from './modules/stream/routes';
 import { healthRoutes } from './modules/health/routes';
 
 export function createApp(ctx: AppContext): Express {
@@ -48,6 +49,7 @@ export function createApp(ctx: AppContext): Express {
   v1.use('/ai', guard, aiRoutes(ctx.ai));
   v1.use('/reports', guard, reportsRoutes(ctx.reports));
   v1.use('/dashboard', guard, dashboardRoutes(ctx.dashboard));
+  v1.use('/stream', streamRoutes(ctx.sse, config.jwtSecret));
   app.use('/api/v1', v1);
 
   app.use(notFoundHandler);

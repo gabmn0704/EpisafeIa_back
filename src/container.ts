@@ -13,6 +13,7 @@ import { AiClient } from './modules/ai/AiClient';
 import { AiService } from './modules/ai/AiService';
 import { ReportsService } from './modules/reports/ReportsService';
 import { DashboardService } from './modules/dashboard/DashboardService';
+import { SseHub } from './modules/stream/SseHub';
 import { AuditService } from './services/AuditService';
 import { EventBus } from './services/EventBus';
 
@@ -32,6 +33,7 @@ export interface AppContext {
   ai: AiService;
   reports: ReportsService;
   dashboard: DashboardService;
+  sse: SseHub;
   /** Comprobación de salud de dependencias (p. ej. ping a la BD). */
   healthCheck: () => Promise<boolean>;
 }
@@ -81,6 +83,7 @@ export function buildContext(opts: ContextOptions): AppContext {
     ai,
     reports,
     dashboard,
+    sse: new SseHub(bus),
     healthCheck: opts.healthCheck ?? (async () => true),
   };
 }
