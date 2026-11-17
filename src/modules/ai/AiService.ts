@@ -121,6 +121,11 @@ export class AiService {
     };
   }
 
+  /** Descarta el riesgo en caché: cambió algún dato de entrada del día. */
+  invalidateRisk(userId: string): void {
+    this.riskCache.delete(userId);
+  }
+
   async riskToday(userId: string): Promise<RiskResult> {
     const cached = this.riskCache.get(userId);
     if (cached) return cached;
