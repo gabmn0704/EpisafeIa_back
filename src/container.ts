@@ -2,6 +2,7 @@ import type { Logger } from 'pino';
 import type { AppConfig } from './config/env';
 import type { Repos } from './repositories/Repos';
 import { AuthService } from './modules/auth/AuthService';
+import { ContactsService } from './modules/contacts/ContactsService';
 import { AuditService } from './services/AuditService';
 import { EventBus } from './services/EventBus';
 
@@ -12,6 +13,7 @@ export interface AppContext {
   bus: EventBus;
   audit: AuditService;
   auth: AuthService;
+  contacts: ContactsService;
   /** Comprobación de salud de dependencias (p. ej. ping a la BD). */
   healthCheck: () => Promise<boolean>;
 }
@@ -35,6 +37,7 @@ export function buildContext(opts: ContextOptions): AppContext {
     bus,
     audit,
     auth,
+    contacts: new ContactsService(opts.repos),
     healthCheck: opts.healthCheck ?? (async () => true),
   };
 }

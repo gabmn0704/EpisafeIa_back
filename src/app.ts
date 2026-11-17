@@ -7,6 +7,7 @@ import { createErrorHandler, notFoundHandler } from './http/errorHandler';
 import { authLimiter, globalLimiter } from './http/rateLimit';
 import { requestLogger } from './http/requestLogger';
 import { authRoutes } from './modules/auth/routes';
+import { contactsRoutes } from './modules/contacts/routes';
 import { healthRoutes } from './modules/health/routes';
 
 export function createApp(ctx: AppContext): Express {
@@ -30,6 +31,7 @@ export function createApp(ctx: AppContext): Express {
   const v1 = express.Router();
   v1.use('/health', healthRoutes(ctx));
   v1.use('/auth', authLimiter(config.rateLimitWindowMs, 30), authRoutes(ctx.auth, guard));
+  v1.use('/contacts', guard, contactsRoutes(ctx.contacts));
   app.use('/api/v1', v1);
 
   app.use(notFoundHandler);
