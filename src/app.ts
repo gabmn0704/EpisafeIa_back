@@ -11,6 +11,7 @@ import { contactsRoutes } from './modules/contacts/routes';
 import { medicationsRoutes } from './modules/medications/routes';
 import { dailyLogsRoutes } from './modules/dailyLogs/routes';
 import { seizuresRoutes } from './modules/seizures/routes';
+import { emergencyRoutes } from './modules/emergency/routes';
 import { healthRoutes } from './modules/health/routes';
 
 export function createApp(ctx: AppContext): Express {
@@ -38,6 +39,7 @@ export function createApp(ctx: AppContext): Express {
   v1.use('/medications', guard, medicationsRoutes(ctx.medications));
   v1.use('/daily-logs', guard, dailyLogsRoutes(ctx.dailyLogs));
   v1.use('/seizures', guard, seizuresRoutes(ctx.seizures));
+  v1.use('/emergency', guard, emergencyRoutes(ctx.emergency));
   app.use('/api/v1', v1);
 
   app.use(notFoundHandler);
