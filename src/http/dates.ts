@@ -29,3 +29,34 @@ export function dateRange(from: string, to: string): string[] {
   for (let d = from; d <= to; d = addDays(d, 1)) out.push(d);
   return out;
 }
+
+/** Desfase (ms) de una zona horaria respecto a UTC en un instante dado. */
+function zoneOffsetMs(at: Date, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).formatToParts(at);
+  const get = (t: string): number => Number(parts.find((p) => p.type === t)?.value);
+  const asUtc = Date.UTC(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second'));
+  return asUtc - Math.floor(at.getTime() / 1000) * 1000;
+}
+
+/** Convierte fecha local (YYYY-MM-DD) + hora local (HH:MM) en un instante UTC. */
+export function zonedTimeToUtc(date: string, time: string, timeZone = 'UTC'): Date {
+  const [y, mo, d] = date.split('-').map(Number) as [number, number, number];
+  const [h, mi] = time.split(':').map(Number) as [number, number];
+  const naive = Date.UTC(y, mo - 1, d, h, mi);
+  try {
+    let result = naive - zoneOffsetMs(new Date(naive), timeZone);
+    result = naive - zoneOffsetMs(new Date(result), timeZone);
+    return new Date(result);
+  } catch {
+    return new Date(naive);
+  }
+}
