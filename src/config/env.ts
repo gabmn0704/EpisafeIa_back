@@ -12,6 +12,7 @@ const schema = z.object({
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
   BCRYPT_ROUNDS: z.coerce.number().int().min(4).max(15).default(10),
   AI_SERVICE_URL: z.string().url().default('http://localhost:5000'),
+  AI_API_KEY: z.string().optional(),
   AI_TIMEOUT_MS: z.coerce.number().int().positive().default(4000),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(300),
@@ -29,6 +30,7 @@ export interface AppConfig {
   refreshTokenTtlDays: number;
   bcryptRounds: number;
   aiServiceUrl: string;
+  aiApiKey?: string;
   aiTimeoutMs: number;
   rateLimitWindowMs: number;
   rateLimitMax: number;
@@ -56,6 +58,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     refreshTokenTtlDays: e.REFRESH_TOKEN_TTL_DAYS,
     bcryptRounds: e.BCRYPT_ROUNDS,
     aiServiceUrl: e.AI_SERVICE_URL.replace(/\/$/, ''),
+    aiApiKey: e.AI_API_KEY || undefined,
     aiTimeoutMs: e.AI_TIMEOUT_MS,
     rateLimitWindowMs: e.RATE_LIMIT_WINDOW_MS,
     rateLimitMax: e.RATE_LIMIT_MAX,

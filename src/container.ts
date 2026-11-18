@@ -61,6 +61,7 @@ export function buildContext(opts: ContextOptions): AppContext {
   const aiClient = new AiClient({
     baseUrl: opts.config.aiServiceUrl,
     timeoutMs: opts.config.aiTimeoutMs,
+    apiKey: opts.config.aiApiKey,
     log: opts.log,
     fetchFn: opts.fetchFn,
   });
