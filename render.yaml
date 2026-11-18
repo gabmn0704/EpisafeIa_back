@@ -1,0 +1,23 @@
+# Blueprint de Render (plan gratis). Crea el servicio web del back desde este repo.
+# Variables marcadas sync:false se piden en el panel al crear el Blueprint.
+services:
+  - type: web
+    name: episafe-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL        # cadena de Neon (con ?sslmode=require)
+        sync: false
+      - key: CORS_ORIGINS        # URL de Vercel, ej. https://episafe.vercel.app
+        sync: false
+      - key: AI_SERVICE_URL      # URL del servicio episafe-ia en Render
+        sync: false
+      - key: AI_API_KEY          # igual a INTERNAL_API_KEY del servicio de IA
+        sync: false
+      - key: AI_TIMEOUT_MS
+        value: "20000"           # tolera el arranque en frío del plan gratis
