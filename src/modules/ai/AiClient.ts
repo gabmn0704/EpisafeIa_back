@@ -4,6 +4,8 @@ import type { AiInsight, PatternsRequest, RiskRequest, RiskResponse } from './ty
 export interface AiClientOptions {
   baseUrl: string;
   timeoutMs: number;
+  /** Clave interna enviada en `x-api-key` (INTERNAL_API_KEY del servicio de IA). */
+  apiKey?: string;
   log: Logger;
   fetchFn?: typeof fetch;
 }
@@ -24,7 +26,10 @@ export class AiClient {
     try {
       const res = await this.fetchFn(`${this.opts.baseUrl}${path}`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: {
+          'content-type': 'application/json',
+          ...(this.opts.apiKey ? { 'x-api-key': this.opts.apiKey } : {}),
+        },
         body: JSON.stringify(body),
         signal: controller.signal,
       });
