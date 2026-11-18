@@ -12,7 +12,7 @@ describe('risk cache invalidation', () => {
     const fetchFn = aiOk();
     const { app } = createTestApp({ fetchFn: fetchFn as never });
     const s = await registerUser(app);
-    const today = new Date().toISOString().slice(0, 10);
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
 
     await request(app).put(`/api/v1/daily-logs/${today}`).set(s.auth).send({ sleepHours: 8, stressLevel: 2 });
     await request(app).get('/api/v1/ai/risk/today').set(s.auth);

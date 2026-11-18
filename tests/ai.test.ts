@@ -22,7 +22,7 @@ describe('ai (service up)', () => {
     const fetchFn = fakeAi();
     const { app } = createTestApp({ fetchFn: fetchFn as never });
     const s = await registerUser(app);
-    await request(app).put(`/api/v1/daily-logs/${new Date().toISOString().slice(0, 10)}`).set(s.auth).send({ sleepHours: 4, stressLevel: 7 });
+    await request(app).put(`/api/v1/daily-logs/${new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' })}`).set(s.auth).send({ sleepHours: 4, stressLevel: 7 });
     const res = await request(app).get('/api/v1/ai/risk/today').set(s.auth);
     expect(res.status).toBe(200);
     expect(res.body.degraded).toBe(false);
